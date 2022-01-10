@@ -17,8 +17,11 @@ import {
 	updateDoc,
 } from '@firebase/firestore';
 import { getDownloadURL, ref, uploadString } from '@firebase/storage';
+import { useSession } from 'next-auth/react';
 
 function Input() {
+	const { data: session } = useSession();
+
 	const [input, setInput] = useState('');
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [showEmojis, setShowEmojis] = useState(false);
@@ -38,10 +41,10 @@ function Input() {
 		setLoading(true);
 
 		const docRef = await addDoc(collection(db, 'posts'), {
-			// id: session.user.uid,
-			// username: session.user.name,
-			// userImg: session.user.image,
-			// tag: session.user.tag,
+			id: session.user.uid,
+			username: session.user.name,
+			userImg: session.user.image,
+			tag: session.user.tag,
 			text: input,
 			timestamp: serverTimestamp(),
 		});
@@ -80,9 +83,9 @@ function Input() {
          flex space-x-3 overflow-y-scroll ${loading && 'opacity-60'}`}
 		>
 			<img
-				src=''
+				src={session.user.image}
 				alt='profile'
-				className=' cursor-pointer h-11 w-11 rounded-full'
+				className=' cursor-pointer h-11 w-11 rounded-full m-3'
 			/>
 			<div className='w-full divide-y divide-gray-700'>
 				<div className={`${selectedFile && 'pb-7'} ${input && 'space-y-2.5'}`}>
@@ -91,7 +94,7 @@ function Input() {
 						onChange={({ target }) => setInput(target.value)}
 						rows='2'
 						placeholder="What's happening?"
-						className='bg-transparent outline-none  text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[50px]'
+						className='bg-transparent outline-none mt-3  text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[50px]'
 					/>
 					{selectedFile && (
 						<div className='relative'>
